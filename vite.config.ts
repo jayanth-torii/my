@@ -9,10 +9,13 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
 // @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
 const isVercel = process.env.VERCEL === "1" || process.env.NITRO_PRESET === "vercel";
+const isGitHubPages = process.env.GITHUB_PAGES === "true";
 
 export default defineConfig({
-  cloudflare: isVercel ? false : undefined,
+  base: isGitHubPages ? '/my/' : '/',
+  cloudflare: (isVercel || isGitHubPages) ? false : undefined,
   tanstackStart: {
-    server: isVercel ? undefined : { entry: "server" },
+    server: (isVercel || isGitHubPages) ? undefined : { entry: "server" },
+    prerender: isGitHubPages ? { enabled: true, crawlLinks: true } : undefined,
   },
 });
