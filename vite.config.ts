@@ -12,9 +12,14 @@ const isVercel = process.env.VERCEL === "1" || process.env.NITRO_PRESET === "ver
 const isGitHubPages = process.env.GITHUB_PAGES === "true";
 
 export default defineConfig({
+  // Only use /my/ base path on GitHub Pages. Vercel uses /
   base: isGitHubPages ? '/my/' : '/',
+  
+  // Disable Cloudflare plugin on other providers
   cloudflare: (isVercel || isGitHubPages) ? false : undefined,
+  
   tanstackStart: {
+    // Disable custom server entry on Vercel/GitHub to use native adapters
     server: (isVercel || isGitHubPages) ? undefined : { entry: "server" },
     prerender: isGitHubPages ? { enabled: true, crawlLinks: true } : undefined,
   },
